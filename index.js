@@ -1,7 +1,8 @@
 import express, { urlencoded } from "express";
 import * as mongoose from "mongoose";
-import { registerUser } from "./AuthMiddleware.js";
-
+import { authenticate, loginUser, registerUser, getProfileInfo } from "./AuthMiddleware.js";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 
 
 const connectToDB = async () => {
@@ -13,6 +14,10 @@ connectToDB()
 
 const app = express()
 
+app.use(bodyParser({
+    urlencoded : true
+}))
+app.use(cookieParser())
 app.use(express.json())
 app.use(urlencoded())
 app.use((req, res, next) => {
@@ -25,6 +30,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/register', registerUser)
+app.post('/login', loginUser)
+app.get('/profile',authenticate, getProfileInfo)
 
 app.listen(3000,() => {
     console.log(`Listening on port 3000`)
